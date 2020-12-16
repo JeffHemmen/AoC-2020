@@ -39,14 +39,11 @@ func main() {
 		}
 		if len(field_keys) == 8 {
 			counter++
-			fmt.Println("Valid Passport")
 			continue
 		}
 		if len(field_keys) <= 6 {
-			fmt.Println("Only %n fields", len(field_keys))
 			continue
 		}
-		fmt.Println(field_keys)
 
 		npc := true
 		for _, key := range field_keys {
@@ -57,7 +54,6 @@ func main() {
 		}
 		if npc {
 			counter++
-			fmt.Println("North Pole Credentials")
 		}
 	}
 	fmt.Println(counter)
