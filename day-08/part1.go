@@ -29,10 +29,6 @@ func main() {
 		codeArgs = append(codeArgs, arg)
 	}
 
-	for i, _ := range codeOps {
-		fmt.Println(codeOps[i], codeArgs[i])
-	}
-
 	for {
 		if ptrHistory[ptr] {
 			break
