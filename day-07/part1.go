@@ -8,13 +8,17 @@ import (
 	"strconv"
 )
 
-const shinygold = "shiny golden"
+const shinygold = "shiny gold"
 
 type Bag struct {
 	colour string
 	requiredBags  []string
 	requiredCount []int
 }
+
+var bagIndex map[string]Bag
+var upstreamDependencies map[string][]string
+var shinygoldUpstream map[string]bool
 
 func parseRule(line string) Bag {
 	var ruleBag string
@@ -34,37 +38,31 @@ func parseRule(line string) Bag {
 	return Bag{ruleBag, requiredBags, requiredCount}
 }
 
+func findAllUpstreams(bag string) {
+	for _, updep := range upstreamDependencies[bag] {
+		shinygoldUpstream[updep] = true
+		findAllUpstreams(updep)
+	}
+}
+
 func main() {
 	f, _ := os.Open("input.txt")
 	defer f.Close()
 
-	bagIndex := make(map[string]Bag)
-	entrypointFinder := make(map[string]bool)
-	entrypoints := make([]string, 0)
+
+	bagIndex = make(map[string]Bag)
+	upstreamDependencies = make(map[string][]string)
+	shinygoldUpstream = make(map[string]bool)
+
 
 	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {
 		thisBag := parseRule(scanner.Text())
 		bagIndex[thisBag.colour] = thisBag
-		entrypointFinder[thisBag.colour] = true
-		// fmt.Println(thisBag)
-	}
-
-	// find DAG entrypoint
-	for _, bag := range bagIndex {
-		for _, eliminated := range bag.requiredBags {
-			entrypointFinder[eliminated] = false
-			fmt.Println("eliminating " + eliminated)
+		for _, bag := range thisBag.requiredBags {
+			upstreamDependencies[bag] = append(upstreamDependencies[bag], thisBag.colour)
 		}
 	}
-	for entrypoint, candidate := range entrypointFinder {
-		if candidate {
-			entrypoints = append(entrypoints, entrypoint)
-		}
-	}
-	
-	// iterate DAG from every entrypoint
-	// - if entrypoint is shinygold, skip
-	// - if entrypoint does not contain shinygold, do nothing
-
+	findAllUpstreams(shinygold)
+	fmt.Println(len(shinygoldUpstream))
 }
