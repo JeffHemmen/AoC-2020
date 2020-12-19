@@ -14,31 +14,31 @@ var dynamicProgramming map[int]uint64
 
 func findCombinations(idx int) uint64 {
 	if dynamicProgramming[idx] != 0 {
-		fmt.Println("dynamicProgramming[", idx, "] = ", dynamicProgramming[idx])
+		// fmt.Println("dynamicProgramming[", idx, "] = ", dynamicProgramming[idx])
 		return dynamicProgramming[idx]
 	}
-	fmt.Println("current index: ", idx)
+	// fmt.Println("current index: ", idx)
 	if idx == 0 { return 1 }
 
 	// adapters[idx-1] always valid
-	ownFactor := uint64(1)
+	//ownFactor := uint64(1)
 	recursiveFactor := findCombinations(idx-1)
 
 	// adapters[idx-2] conditional
 	if idx >= 2 && adapters[idx-2] >= adapters[idx] - 3 {
-		ownFactor++
-		recursiveFactor *= findCombinations(idx-2)
+		//ownFactor++
+		recursiveFactor += findCombinations(idx-2)
 	}
 
 	// adapters[idx-3] conditional
 	if idx >= 3 && adapters[idx-3] >= adapters[idx] - 3 {
-		ownFactor++
-		recursiveFactor *= findCombinations(idx-3)
+		//ownFactor++
+		recursiveFactor += findCombinations(idx-3)
 	}
-	res := ownFactor * recursiveFactor
-	fmt.Println("Completed index: ", idx, " (", adapters[idx], "); Result: ", res)
-	dynamicProgramming[idx] = res
-	return res
+	//res := ownFactor * recursiveFactor
+	// fmt.Println("Completed index: ", idx, " (", adapters[idx], "); Result: ", recursiveFactor)
+	dynamicProgramming[idx] = recursiveFactor
+	return recursiveFactor
 }
 
 func main() {
@@ -54,5 +54,5 @@ func main() {
 	}
 	sort.Ints(adapters)
 	dynamicProgramming = make(map[int]uint64)
-	fmt.Println(findCombinations(20))
+	fmt.Println(findCombinations(len(adapters)-1))
 }
